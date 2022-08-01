@@ -5,13 +5,13 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # load data
-rootdir = 'C:/Users/yvonn/Dropbox/work/McGill_PhD/flavor_project/'
+rootdir = r"C:\Users\lolob\Downloads"
 reject = [4002, 4007]
 
-df_flav = pd.read_csv(op.join(rootdir, 'data/data_all_run_flavor_condition.csv'), sep=';')
+df_flav = pd.read_csv(op.join(rootdir, 'data_all_run_flavor_condition.csv'), sep=';')
 df_flav = df_flav.loc[~df_flav.ID.isin(reject), :]  # reject bad subj
 
-df_money = pd.read_csv(op.join(rootdir, 'data/data_all_run_money_condition.csv'), sep=';')
+df_money = pd.read_csv(op.join(rootdir, 'data_all_run_money_condition.csv'), sep=';')
 df_money = df_money.loc[~df_money.ID.isin(reject), :]  # reject bad subj
 
 
@@ -86,13 +86,12 @@ def plot_rt(df_long, r_type, save=True):
 
     fig, axes = plt.subplots(1, 2, figsize=(10, 3))
     for ci, c in enumerate(['maltodextrin', 'placebo']):
-        sns.barplot(data=df_long[df_long.condition == c],
+        sns.boxplot(data=df_long[df_long.condition == c],
                     x='run', y='rt',
-                    palette=colors[c], hue='bev', hue_order=order,
-                    ci=95, ax=axes[ci],
+                    palette=colors[c], hue='bev', hue_order=order, ax=axes[ci],
                     ).set_title(c.capitalize(), fontweight='bold', fontsize=14)
         axes[ci].set_ylabel('RT (sec)', fontweight='bold');
-        axes[ci].set_ylim(.5, 1.)
+        axes[ci].set_ylim(min(df_long[df_long.condition == c]['rt']), max(df_long[df_long.condition == c]['rt']))
         axes[ci].set_xticks([0, 1, 2]);
         axes[ci].set_xticklabels(['Run 1', 'Run 2', 'Run 3'])
         axes[ci].set_xlabel('')
@@ -110,8 +109,6 @@ for r in r_type:
     df = clean_df(r_type[r], r)
     plot_choiceprob(df, r)
     plot_rt(df, r)
-----------FLAVOUR - ---------
-----------MONEY - ---------
 
 # sort data
 df_mean = df.groupby(['id', 'condition', 'bev']).mean()
@@ -132,10 +129,10 @@ axes[0].set_ylabel('Choice Probability of Selecting High Reward (%)', fontweight
 axes[0].set_xlabel('Image Selected', fontweight='bold')
 axes[0].get_legend().remove()
 
-sns.barplot(data=df_mean,
-            x='bev', y='rt', ci=95, **kwargs,
+sns.boxplot(data=df_mean,
+            x='bev', y='rt', **kwargs,
             ax=axes[1])
-axes[1].set_ylim(.6, 1.)
+axes[1].set_ylim(min(df_mean['rt']), max(df_mean['rt']))
 axes[1].set_ylabel('RT (sec)', fontweight='bold')
 axes[1].set_xlabel('Image Selected', fontweight='bold')
 handles, labels = axes[1].get_legend_handles_labels()
